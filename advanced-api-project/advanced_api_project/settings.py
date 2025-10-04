@@ -70,6 +70,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'advanced_api_project.wsgi.application'
 
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",  # Django login sessions
+        "rest_framework.authentication.BasicAuthentication",    # Username/password in request
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",  # Default: read for all, write only for logged-in
+    ]
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
