@@ -1,32 +1,42 @@
+# blog/forms.py
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Profile
+from django.contrib.auth.forms import UserCreationForm
+from .models import Post, Profile
 
+# 🧾 Register Form
 class CustomUserCreationForm(UserCreationForm):
-    email = forms.EmailField(required=True, help_text='Required')
+    email = forms.EmailField(required=True)
 
     class Meta:
         model = User
-        fields = ("username", "email", "password1", "password2")
+        fields = ['username', 'email', 'password1', 'password2']
 
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.email = self.cleaned_data['email']
-        if commit:
-            user.save()
-        return user
 
+# ✏️ Form for Creating/Updating a Post
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'content']
+
+    def clean_title(self):
+        title = self.cleaned_data.get('title')
+        if len(title) < 5:
+            raise forms.ValidationError("Title must be at least 5 characters long.")
+        return title
+
+
+# 👤 User Update Form
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField(required=True)
-    first_name = forms.CharField(required=False)
-    last_name = forms.CharField(required=False)
 
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email"]
+        fields = ['username', 'email']
 
+
+# 🖼 Profile Update Form
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ["bio"]  # include avatar only if using ImageField
+        fields = ['bio', 'image']
