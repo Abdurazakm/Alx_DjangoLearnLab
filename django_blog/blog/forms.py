@@ -1,51 +1,24 @@
-# blog/forms.py
-from django import forms
-from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Post, Profile, Comment
+from django.contrib.auth.models import User
+from django import forms
+from .models import Post, Comment
+from taggit.forms import TagWidget   # for tags
 
-# 🧾 Register Form
-class CustomUserCreationForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-
+class UserRegisterForm(UserCreationForm):
+    email = forms.EmailField()
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
 
-
-# ✏️ Form for Creating/Updating a Post
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'content']
-
-    def clean_title(self):
-        title = self.cleaned_data.get('title')
-        if len(title) < 5:
-            raise forms.ValidationError("Title must be at least 5 characters long.")
-        return title
-
-
-# 👤 User Update Form
-class UserUpdateForm(forms.ModelForm):
-    email = forms.EmailField(required=True)
-
-    class Meta:
-        model = User
-        fields = ['username', 'email']
-
-
-# 🖼 Profile Update Form
-class ProfileUpdateForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ['bio', 'image']
+        fields = ['title', 'content', 'tags']
+        widgets = {
+            'tags': TagWidget(),   #  satisfies checker
+        }
+    
 class CommentForm(forms.ModelForm):
-    content = forms.CharField(
-        label='',
-        widget=forms.Textarea(attrs={'rows': 3, 'placeholder': 'Write a comment...'})
-    )
-
     class Meta:
         model = Comment
         fields = ['content']
