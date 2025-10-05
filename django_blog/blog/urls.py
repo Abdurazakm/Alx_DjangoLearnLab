@@ -1,30 +1,22 @@
-# blog/urls.py
 from django.urls import path
-from .views import (
-    PostListView,
-    PostDetailView,
-    PostCreateView,
-    PostUpdateView,
-    PostDeleteView,
-    register_view,
-    profile_view
-)
-from django.contrib.auth import views as auth_views
+from . import views
 
 app_name = 'blog'
 
 urlpatterns = [
-    # Blog post URLs
-    path('', PostListView.as_view(), name='home'),
-    path('posts/', PostListView.as_view(), name='post-list'),
-    path('posts/new/', PostCreateView.as_view(), name='post-create'),  # ✅ CREATE
-    path('posts/<int:pk>/', PostDetailView.as_view(), name='post-detail'),  # ✅ READ
-    path('posts/<int:pk>/update/', PostUpdateView.as_view(), name='post-update'),  # ✅ UPDATE
-    path('posts/<int:pk>/delete/', PostDeleteView.as_view(), name='post-delete'),  # ✅ DELETE
+    # 🏠 Home & Profile
+    path('', views.PostListView.as_view(), name='home'),
+    path('register/', views.register_view, name='register'),
+    path('profile/', views.profile_view, name='profile'),
 
-    # Authentication and profile
-    path('register/', register_view, name='register'),
-    path('profile/', profile_view, name='profile'),
-    path('login/', auth_views.LoginView.as_view(template_name='blog/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='blog/logout.html'), name='logout'),
+    # 📝 Post CRUD
+    path('post/new/', views.PostCreateView.as_view(), name='post-create'),
+    path('post/<int:pk>/', views.PostDetailView.as_view(), name='post-detail'),
+    path('post/<int:pk>/update/', views.PostUpdateView.as_view(), name='post-update'),
+    path('post/<int:pk>/delete/', views.PostDeleteView.as_view(), name='post-delete'),
+
+    # 💬 Comment CRUD (linked to specific posts)
+    path('post/<int:pk>/comment/new/', views.add_comment, name='add-comment'),
+    path('comment/<int:pk>/edit/', views.edit_comment, name='edit-comment'),
+    path('comment/<int:pk>/delete/', views.delete_comment, name='delete-comment'),
 ]
